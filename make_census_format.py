@@ -38,9 +38,9 @@ def main():
         df['Reported on'] = pd.Timestamp.now().date()
         df['Reported on'] = pd.to_datetime(df['Reported on'])
         df = df[['Employee Number', 'Name', 'Employee Type', 'Department', 'Status',
-        'Hire Date', 'A) W2 or 1099',
-        'B) FT/Part Time/Per Diem', 'C) Pay Type', 'Salary or Hourly Rate', 'D) Productivity',
-        'E) Availability', 'F) Coverage Areas','Key - FT/PT/PD', 'Key - Pay Type', 'Reported on', 'Location']]
+                  'Hire Date', 'A) W2 or 1099',
+                  'B) FT/Part Time/Per Diem', 'C) Pay Type', 'Salary or Hourly Rate', 'D) Productivity',
+                  'E) Availability', 'F) Coverage Areas','Key - FT/PT/PD', 'Key - Pay Type', 'Reported on', 'Location']]
         
         # Download button
         excel_data = BytesIO()
@@ -58,6 +58,23 @@ def main():
             b64_excel = base64.b64encode(excel_data.read()).decode()
             href_excel = f'<a href="data:application/octet-stream;base64,{b64_excel}" download="{file.name}">Download Updated Data ({file.name})</a>'
             st.markdown(href_excel, unsafe_allow_html=True)
+            
+            # Convert to CSV format
+            csv_data = BytesIO()
+            if file_extension == 'xlsx' or file_extension == 'xls':
+                df.to_csv(csv_data, index=False, encoding='utf-8')
+                csv_file_extension = 'csv'
+            elif file_extension == 'csv':
+                csv_data = excel_data
+                csv_file_extension = file_extension
+            else:
+                st.warning("Unsupported file format. Unable to convert to CSV.")
+                return
+            
+            csv_data.seek(0)
+            b64_csv = base64.b64encode(csv_data.read()).decode()
+            href_csv = f'<a href="data:application/octet-stream;base64,{b64_csv}" download="{os.path.splitext(file.name)[0]}.{csv_file_extension}">Download Updated Data (CSV)</a>'
+            st.markdown(href_csv, unsafe_allow_html=True)
 
 
 if __name__ == '__main__':
