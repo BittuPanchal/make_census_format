@@ -31,7 +31,11 @@ def main():
                                              np.where(df['Location'] == 'West Virginia', 'Martinsburg, WV',
                                                       np.where(df['Location'] == 'Virginia - Countryside', 'Sterling, VA',
                                                                np.where(df['Location'] == 'Virginia - Hillside Hospice', 'Hillside Hospice',
-                                                                        'Fairfield, CT')))))
+                                                                        np.where(df['Location'] == 'PathWell Health - WV', 'Martinsburg, WV',
+                                                                                np.where(df['Location'] == 'PathWell Health - VA', 'Winchester, VA', 
+                                                                                         'Fairfield, CT')))))))
+                                                                                         
+                                                                        
         else:
             df['Agency'] = 'Fairfield, CT'
         return df
