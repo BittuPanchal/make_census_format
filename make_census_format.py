@@ -54,7 +54,7 @@ def main():
         df = read_file(file)
         df = add_agency_by_location(df)
         df = remove_location_column(df)
-        df = df.rename(columns={'Job Type':'Department', 'Agency':'Location', 'B) FT/PT/PD/PRN':'B) FT/Part Time/Per Diem'})
+        df = df.rename(columns={'Job Type':'Department', 'Agency':'Location', 'B) FT/PD/PRN':'B) FT/Part Time/Per Diem'})
         df['Employee Type'] = None
         df['Salary or Hourly Rate'] = None
         df['Key - FT/PT/PD'] = None
