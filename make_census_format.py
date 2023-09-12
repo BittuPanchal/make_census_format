@@ -55,7 +55,7 @@ def main():
         df = read_file(file)
         df = add_agency_by_location(df)
         df = remove_location_column(df)
-        df = df.rename(columns={'Job Type':'Department', 'Agency':'Location', 'B) FT/PD/PRN':'B) FT/Part Time/Per Diem'})
+        df = df.rename(columns={'Job Type':'Department', 'Agency':'Location', 'B) FT/PD/PRN':'B) FT/Part Time/Per Diem', 'H) F1/F2/F3':'Tier'})
         df['Employee Type'] = None
         df['Salary or Hourly Rate'] = None
         df['Key - FT/PT/PD'] = None
@@ -64,7 +64,7 @@ def main():
         df['Reported on'] = pd.to_datetime(df['Reported on'])
         df = df[['Employee Number', 'Name', 'Employee Type', 'Department', 'Status',
                   'Hire Date', 'A) W2 or 1099',
-                  'B) FT/Part Time/Per Diem', 'C) Pay Type', 'Salary or Hourly Rate', 'D) Productivity',
+                  'B) FT/Part Time/Per Diem', 'C) Pay Type', 'Tier', 'Salary or Hourly Rate', 'D) Productivity',
                   'E) Availability', 'F) Coverage Areas','Key - FT/PT/PD', 'Key - Pay Type', 'Reported on', 'Location']]
         
         # Download button
