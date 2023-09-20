@@ -26,7 +26,7 @@ def read_file(file):
 def main():    
     def add_agency_by_location(df):
         if 'Location' in df.columns:
-            df['Agency'] = np.where(df['Location'] == 'California - San Diego', 'San Diego, CA',
+            df['Agency'] = np.where(df['Location'] == 'PathWell Health - CA', 'San Diego, CA',
                                     np.where(df['Location'] == 'Virginia - Caring Angels', 'Winchester, VA',
                                              np.where(df['Location'] == 'West Virginia', 'Martinsburg, WV',
                                                       np.where(df['Location'] == 'Virginia - Countryside', 'Sterling, VA',
