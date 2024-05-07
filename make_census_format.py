@@ -7,14 +7,15 @@ from io import BytesIO
 import os
 from datetime import date
 
+dtype=dict(zip(["Employee Number"], ['str']*len(["Employee Number"])))
 
 def read_file(file):
     if file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-        df = pd.read_excel(file, header = 1)
+        df = pd.read_excel(file, header = 1, dtype = dtype)
     elif file.type == "application/vnd.ms-excel":
-        df = pd.read_excel(file, header = 1)
+        df = pd.read_excel(file, header = 1, dtype = dtype)
     elif file.type == "text/csv":
-        df = pd.read_csv(file, header = 1)
+        df = pd.read_csv(file, header = 1, dtype = dtype)
     else:
         raise ValueError("Unsupported file format. Only XLSX, XLS, and CSV files are supported.")
     return df
@@ -51,6 +52,8 @@ def main():
 
     # File Upload
     file = st.file_uploader("Upload file", type=["xlsx", "xls", "csv"])
+
+
     if file is not None:
         df = read_file(file)
         df = add_agency_by_location(df)
@@ -76,43 +79,60 @@ def main():
                   'B) FT/Part Time/Per Diem', 'C) Pay Type', 'Tier', 'Salary or Hourly Rate', 'D) Productivity',
                   'E) Availability', 'F) Coverage Areas','Key - FT/PT/PD', 'Key - Pay Type', 'Reported on', 'Location']]
         
+        
+    
+        
         # Download button
         excel_data = BytesIO()
         if file is not None:
             file_extension = os.path.splitext(file.name)[1][1:].lower()
             if file_extension == 'xlsx' or file_extension == 'xls':
-                df.to_excel(excel_data, index=False, encoding='utf-8', engine='xlsxwriter')
+                df.to_excel(excel_data, index=False, engine='xlsxwriter')
             elif file_extension == 'csv':
                 df.to_csv(excel_data, index=False, encoding='utf-8')
             else:
                 st.warning("Unsupported file format. Unable to download.")
                 return
             
-            excel_data.seek(0)
-            b64_excel = base64.b64encode(excel_data.read()).decode()
-            href_excel = f'<a href="data:application/octet-stream;base64,{b64_excel}" download="{file.name}">Download Updated Data ({file.name})</a>'
-            st.markdown(href_excel, unsafe_allow_html=True)
             
-            # Convert to CSV format
-            csv_data = BytesIO()
-            if file_extension == 'xlsx' or file_extension == 'xls':
-                df.to_csv(csv_data, index=False, encoding='utf-8')
-                csv_file_extension = 'csv'
-            elif file_extension == 'csv':
-                csv_data = excel_data
-                csv_file_extension = file_extension
-            else:
-                st.warning("Unsupported file format. Unable to convert to CSV.")
-                return
+            # excel_data.seek(0)
+            # b64_excel = base64.b64encode(excel_data.read()).decode()
+            # href_excel = f'<a href="data:application/octet-stream;base64,{b64_excel}" download="{file.name}">Download Updated Data ({file.name})</a>'
+            # st.markdown(href_excel, unsafe_allow_html=True)
+
+
             
-            csv_data.seek(0)
-            b64_csv = base64.b64encode(csv_data.read()).decode()
+                        
+            
+            # # Convert to CSV format
+            # csv_data = BytesIO()
+            # if file_extension == 'xlsx' or file_extension == 'xls':
+            #     df.to_csv(csv_data, index=False, encoding='utf-8')
+            #     csv_file_extension = 'csv'
+            # elif file_extension == 'csv':
+            #     csv_data = excel_data
+            #     csv_file_extension = file_extension
+            # else:
+            #     st.warning("Unsupported file format. Unable to convert to CSV.")
+            #     return
+            
+            
+            
+            # csv_data.seek(0)
+            # b64_csv = base64.b64encode(csv_data.read()).decode()
             
             today = date.today().strftime("%Y-%m-%d")
             file_name = os.path.splitext(file.name)[0]
 
-            href_csv = f'<a href="data:application/octet-stream;base64,{b64_csv}" download="{today}_{file_name}.{csv_file_extension}">Download Updated Data (CSV)</a>'
-            st.markdown(href_csv, unsafe_allow_html=True)
+            # href_csv = f'<a href="data:application/octet-stream;base64,{b64_csv}" download="{today}_{file_name}.{csv_file_extension}">Download Updated Data (CSV)</a>'
+            # st.markdown(href_csv, unsafe_allow_html=True)
+
+            with pd.ExcelWriter(excel_data, engine='xlsxwriter') as writer:
+                df.to_excel(writer, index=False)
+            excel_data.seek(0)
+            b64_excel = base64.b64encode(excel_data.read()).decode()
+            href_excel = f'<a href="data:application/octet-stream;base64,{b64_excel}" download="{today}_{file_name}.xlsx">Download Updated Data</a>'
+            st.markdown(href_excel, unsafe_allow_html=True)
 
 
 if __name__ == '__main__':
